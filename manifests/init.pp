@@ -1,6 +1,7 @@
 class gitolite (
-  $source  = 'http://github.com/sitaramc/gitolite.git',
-  $version = 'v3.1'
+  $source     = 'http://github.com/sitaramc/gitolite.git',
+  $version    = 'v3.1',
+  $local_code = '/sysutils/gitolite',
 ) {
 
   $gitolite_user = hiera('gitolite_user')
@@ -9,13 +10,13 @@ class gitolite (
   $gitolite_cmd  = "${gitolite_src}/install -ln ${gitolite_home}/bin"
 
   vcsrepo { $gitolite_src:
-      provider => 'git',
-      ensure   => present,
-      source   => $source,
-      revision => $version,
-      owner    => $gitolite_user,
-      group    => $gitolite_user,
-      notify   => Exec['gitolite/install'],
+    provider => 'git',
+    ensure   => present,
+    source   => $source,
+    revision => $version,
+    owner    => $gitolite_user,
+    group    => $gitolite_user,
+    notify   => Exec['gitolite/install'],
   }
 
   exec { 'gitolite/install':
@@ -44,8 +45,16 @@ class gitolite (
     user        => $gitolite_user,
     group       => $gitolite_user,
     logoutput   => 'on_failure',
-    path        => ["${gitolite_home}/bin", '/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'],
+    path        => ["${gitolite_home}/bin", '/usr/bin', '/bin'],
     refreshonly => true,
+  }
+
+  file { "${gitolite_home}/.gitolite.rc":
+    ensure  => present,
+    owner   => $gitolite_user,
+    group   => $gitolite_group,
+    content => template('gitolite/gitolite.rc.erb'),
+    require => Exec['gitolite_setup'],
   }
 
 }
