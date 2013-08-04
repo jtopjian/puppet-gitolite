@@ -1,13 +1,7 @@
-class gitolite::user {
-
-  $gitolite_user = hiera('gitolite_user')
-  $gitolite_home = hiera('gitolite_home')
-
-  File {
-    owner   => $gitolite_user,
-    group   => $gitolite_user,
-    require => User[$gitolite_user],
-  }
+class gitolite::user (
+  $gitolite_user = $::gitolite::params::gitolite_user,
+  $gitolite_home = $::gitolite::params::gitolite_home
+) {
 
   user { $gitolite_user:
     ensure     => present,

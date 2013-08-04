@@ -1,8 +1,16 @@
-class gitolite::web {
+# This is a pretty sloppy class that doesn't conform to best module
+# practices. For example, it install gitweb and highlight, assumes
+# a www-user, etc...
+#
+# However, in the right environment, it's an easy way to get gitweb
+# installed and running
+#
+class gitolite::web (
+  $gitolite_user = $::gitolite::params::gitolite_user,
+  $gitolite_home = $::gitolite::params::gitolite_home
+) {
 
   # Some basic info
-  $gitolite_user = hiera('gitolite_user')
-  $gitolite_home = hiera('gitolite_home')
   $project_root  = "${gitolite_home}/repositories"
   $projects_list = "${gitolite_home}/projects.list"
 
