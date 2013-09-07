@@ -1,7 +1,7 @@
 class gitolite::user (
   $gitolite_user = $::gitolite::params::gitolite_user,
   $gitolite_home = $::gitolite::params::gitolite_home
-) {
+) inherits ::gitolite::params {
 
   user { $gitolite_user:
     ensure     => present,

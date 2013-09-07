@@ -2,9 +2,8 @@ class gitolite (
   $source        = $::gitolite::params::source,
   $version       = $::gitolite::params::version,
   $gitolite_user = $::gitolite::params::gitolite_user,
-  $gitolite_home = $::gitolite::params::gitolite_home,
-  $local_code    = $::gitolite::params::local_code
-) {
+  $gitolite_home = $::gitolite::params::gitolite_home
+) inherits gitolite::params {
 
   $gitolite_src  = "${gitolite_home}/gitolite"
   $gitolite_cmd  = "${gitolite_src}/install -ln ${gitolite_home}/bin"
@@ -31,10 +30,7 @@ class gitolite (
   }
 
   exec { 'gitolite_setup':
-    require     => [
-      Vcsrepo[$gitolite_src],
-      Exec['gitolite/install']
-    ],
+    require     => Exec['gitolite/install'],
     environment => [
       "HOME=${gitolite_home}",
       "USER=${gitolite_user}",
@@ -44,16 +40,8 @@ class gitolite (
     user        => $gitolite_user,
     group       => $gitolite_user,
     logoutput   => 'on_failure',
-    path        => ["${gitolite_home}/bin"],
+    path        => ["${gitolite_home}/bin", '/bin', '/usr/bin'],
     refreshonly => true,
-  }
-
-  file { "${gitolite_home}/.gitolite.rc":
-    ensure  => present,
-    owner   => $gitolite_user,
-    group   => $gitolite_group,
-    content => template('gitolite/gitolite.rc.erb'),
-    require => Exec['gitolite_setup'],
   }
 
 }
